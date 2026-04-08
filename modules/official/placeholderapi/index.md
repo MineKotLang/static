@@ -1,4 +1,4 @@
-# Community Modules
+# PlaceholderAPI Module
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus non arcu in nisi suscipit varius at eleifend nibh. Ut rutrum lacus vel lacus pulvinar, vitae faucibus risus convallis. Donec quis placerat nulla. In arcu lorem, accumsan volutpat scelerisque vitae, varius quis lectus. Nam rutrum lobortis lorem, et ultrices urna dictum eu. Proin bibendum at mi vel porta. Morbi iaculis nec lorem non vehicula. Nam tortor ex, dapibus finibus est quis, vulputate ultrices purus. Mauris ipsum velit, ullamcorper eget hendrerit quis, malesuada eu libero. Ut pulvinar nec ex in consequat. Suspendisse vel nisi elit. Pellentesque pretium tellus placerat, dignissim turpis et, dignissim mauris.
 

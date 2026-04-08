@@ -1,0 +1,10 @@
+[
+  { "path": "/scripts/", "label": "Overview" },
+  {
+    "label": "Examples",
+    "children": [
+      { "path": "/scripts/samples/welcomer/", "label": "Simple Welcomer" },
+      { "path": "/scripts/samples/gamemode-commands/", "label": "Simple Gamemode Commands" }
+    ]
+  }
+]

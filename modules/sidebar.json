@@ -1,0 +1,17 @@
+[
+  { "path": "/modules/", "label": "Overview" },
+  {
+    "label": "Official Modules",
+    "children": [
+      { "path": "/modules/official/vault/", "label": "Vault Module" },
+      { "path": "/modules/official/placeholderapi/", "label": "PlaceholderAPI Module" }
+    ]
+  },
+  {
+    "label": "Community Modules",
+    "children": [
+      { "path": "/modules/community/sample-addon-1/", "label": "Sample Addon 1" },
+      { "path": "/modules/community/sample-addon-2/", "label": "Sample Addon 2" }
+    ]
+  }
+]

@@ -1,0 +1,16 @@
+[
+  { "path": "/docs/", "label": "Introduction" },
+  {
+    "label": "Getting Started", "path": "/docs/getting-started/",
+    "children": [
+      { "path": "/docs/getting-started/installation.md", "label": "Installation" },
+      { "path": "/docs/getting-started/configuration.md", "label": "Configuration" }
+    ]
+  },
+  {
+    "label": "Advanced", "path": "/docs/advanced/",
+    "children": [
+      { "path": "/docs/advanced/concepts.md", "label": "Advanced Concepts" }
+    ]
+  }
+]
