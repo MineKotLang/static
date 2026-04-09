@@ -1,0 +1,69 @@
+[
+  {
+    "id": "docs",
+    "label": "Documentation",
+    "entries": [
+      {
+        "label": "Getting Started",
+        "path": "/docs/getting-started",
+        "indexPath": "/docs/getting-started/index",
+        "children": [
+          { "label": "Installation", "path": "/docs/getting-started/installation" },
+          { "label": "Configuration", "path": "/docs/getting-started/configuration" },
+          { "label": "Overview", "path": "/docs/getting-started/index" }
+        ]
+      },
+      {
+        "label": "Advanced",
+        "path": "/docs/advanced",
+        "indexPath": "/docs/advanced/index",
+        "children": [
+          { "label": "Concepts", "path": "/docs/advanced/concepts" },
+          { "label": "Overview", "path": "/docs/advanced/index" }
+        ]
+      },
+      { "label": "Overview", "path": "/docs/index" }
+    ]
+  },
+  {
+    "id": "modules",
+    "label": "Modules",
+    "entries": [
+      {
+        "label": "Official",
+        "path": "/modules/official",
+        "indexPath": "/modules/official/index",
+        "children": [
+          { "label": "PlaceholderAPI", "path": "/modules/official/placeholderapi" },
+          { "label": "Vault", "path": "/modules/official/vault" }
+        ]
+      },
+      {
+        "label": "Community",
+        "path": "/modules/community",
+        "indexPath": "/modules/community/index",
+        "children": [
+          { "label": "Sample Addon 1", "path": "/modules/community/sample-addon-1" },
+          { "label": "Sample Addon 2", "path": "/modules/community/sample-addon-2" }
+        ]
+      },
+      { "label": "Overview", "path": "/modules/index" }
+    ]
+  },
+  {
+    "id": "scripts",
+    "label": "Scripts",
+    "entries": [
+      {
+        "label": "Samples",
+        "path": "/scripts/samples",
+        "indexPath": "/scripts/samples/index",
+        "children": [
+          { "label": "Gamemode Commands", "path": "/scripts/samples/gamemode-commands" },
+          { "label": "Welcomer", "path": "/scripts/samples/welcomer" }
+        ]
+      },
+      { "label": "Overview", "path": "/scripts/index" }
+    ]
+  }
+]
