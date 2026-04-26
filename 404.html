@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>MinekotLang Static API</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+        }
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: #1e1e2e;
+            color: #cdd6f4;
+            display: flex;
+            flex-direction: column;
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+        h1 { 
+            color: #cba6f7;
+            font-weight: 600;
+            font-size: 2.5em;
+            margin-bottom: 30px;
+        }
+        h2 { 
+            color: #cba6f7;
+            font-weight: 600;
+            font-size: 2em;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+        }
+        .section { 
+            margin: 30px 0;
+            padding: 20px;
+            background: #313244;
+            border-left: 3px solid #cba6f7;
+            border-radius: 4px;
+        }
+        .section h2 { 
+            color: #b4befe;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        a { 
+            color: #cba6f7;
+            text-decoration: none;
+            font-size: 1.1em;
+            transition: color 0.2s;
+        }
+        a:hover { 
+            color: #b4befe;
+            text-decoration: underline;
+        }
+        .loading { 
+            color: #a6adc8;
+            font-style: italic;
+        }
+        .error { 
+            color: #f38ba8;
+        }
+        #content {
+            max-width: 900px;
+            margin: 0 auto;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+    <h1>> minekotlang/static</h1>
+    <h2>/<span id="current-dir"></span></h2>
+    <div id="content" class="loading">// Loading directory contents...</div>
+
+    <script>
+        const owner = 'MineKotLang';
+        const repo = 'static';
+        
+        // Determine base path to handle subfolder hosting on GitHub Pages
+        let basePath = '/';
+        const pathParts = window.location.pathname.split('/');
+        if (pathParts[1] === repo) {
+            basePath = '/' + repo + '/';
+        }
+
+        // Helper to extract the relative path from the URL
+        function getPathFromUrl(urlPath) {
+            let p = urlPath.substring(basePath.length);
+            if (p.startsWith('/')) p = p.substring(1);
+            if (p.endsWith('/')) p = p.substring(0, p.length - 1);
+            if (p.toLowerCase() === 'index.html' || p.toLowerCase() === '404.html') {
+                p = '';
+            }
+            return p;
+        }
+
+        // Core loading function
+        function loadDirectory(path, pushState = true) {
+            document.getElementById('current-dir').textContent = path;
+            const content = document.getElementById('content');
+            content.innerHTML = '<div class="loading">// Loading directory contents...</div>';
+
+            const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;
+
+            fetch(apiUrl)
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`GitHub API returned ${res.status} ${res.statusText}`);
+                    }
+                    return res.json();
+                })
+                .then(data => {
+                    const items = Array.isArray(data) ? data : [data];
+                    
+                    const dirs = items
+                        .filter(item => item.type === 'dir' && !item.name.startsWith('.'))
+                        .sort((a, b) => a.name.localeCompare(b.name));
+                        
+                    const files = items
+                        .filter(item => item.type === 'file' && !item.name.startsWith('.') && item.name !== 'index.html' && item.name !== '404.html')
+                        .sort((a, b) => a.name.localeCompare(b.name));
+
+                    content.innerHTML = '';
+
+                    // Add ".." navigation if we're not in the root directory
+                    if (path !== '') {
+                        const parentPathParts = path.split('/');
+                        parentPathParts.pop(); // Remove current folder
+                        const parentPath = parentPathParts.join('/');
+                        const parentUrl = basePath + (parentPath ? parentPath + '/' : '');
+
+                        const section = document.createElement('div');
+                        section.className = 'section';
+                        section.innerHTML = `
+                            <h2>📁 ..</h2>
+                            <p><a href="${parentUrl}" class="dir-link" data-path="${parentPath}">→ go back</a></p>
+                        `;
+                        content.appendChild(section);
+                    }
+
+                    if (dirs.length === 0 && files.length === 0) {
+                        content.innerHTML += '<p class="error">// Directory is empty.</p>';
+                        return;
+                    }
+
+                    dirs.forEach(dir => {
+                        const section = document.createElement('div');
+                        section.className = 'section';
+                        const dirPath = (path ? path + '/' : '') + dir.name;
+                        const linkUrl = basePath + dirPath + '/';
+                        section.innerHTML = `
+                            <h2>📁 ${dir.name}</h2>
+                            <p><a href="${linkUrl}" class="dir-link" data-path="${dirPath}">→ view</a></p>
+                        `;
+                        content.appendChild(section);
+                    });
+
+                    files.forEach(file => {
+                        const section = document.createElement('div');
+                        section.className = 'section';
+                        const linkUrl = basePath + (path ? path + '/' : '') + file.name;
+                        section.innerHTML = `
+                            <h2>📄 ${file.name}</h2>
+                            <p><a href="${linkUrl}">→ open</a></p>
+                        `;
+                        content.appendChild(section);
+                    });
+
+                    if (pushState) {
+                        const newUrl = basePath + (path ? path + '/' : '');
+                        window.history.pushState({ path: path }, '', newUrl);
+                    }
+                })
+                .catch(err => {
+                    content.innerHTML = `<p class="error">// Error loading directory: ${err.message}</p>`;
+                });
+        }
+
+        // Intercept clicks on directory links
+        document.addEventListener('click', e => {
+            const link = e.target.closest('.dir-link');
+            if (link) {
+                e.preventDefault();
+                const path = link.getAttribute('data-path');
+                loadDirectory(path);
+            }
+        });
+
+        // Handle browser back/forward buttons
+        window.addEventListener('popstate', e => {
+            if (e.state && typeof e.state.path === 'string') {
+                loadDirectory(e.state.path, false);
+            } else {
+                loadDirectory(getPathFromUrl(window.location.pathname), false);
+            }
+        });
+
+        // Initial load
+        const initialPath = getPathFromUrl(window.location.pathname);
+        window.history.replaceState({ path: initialPath }, '', window.location.pathname);
+        loadDirectory(initialPath, false);
+    </script>
+</body>
+</html>
