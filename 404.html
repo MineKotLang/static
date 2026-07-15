@@ -110,7 +110,7 @@
             document.getElementById('current-dir').textContent = path;
             const content = document.getElementById('content');
 
-            if (path === 'api/contents' || path === 'api/contents.json') {
+            if (path === 'api/contents' || path === 'api/contents.json' || path.endsWith('/api/contents') || path.endsWith('/api/contents.json')) {
                 content.innerHTML = '<div class="loading">// Querying GitHub API recursively for documentation contents...</div>';
 
                 function parseFrontmatter(text) {
