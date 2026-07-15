@@ -1,5 +1,7 @@
 ---
 root: org.minekot.site.components.layouts.DocsLayout
+title: Configuration
+tag: GUIDE
 ---
 
 # Configuration

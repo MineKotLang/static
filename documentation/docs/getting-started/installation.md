@@ -1,5 +1,7 @@
 ---
 root: org.minekot.site.components.layouts.DocsLayout
+title: Installation
+tag: GUIDE
 ---
 
 # Installation

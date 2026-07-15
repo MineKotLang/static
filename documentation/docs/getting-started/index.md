@@ -1,5 +1,7 @@
 ---
 root: org.minekot.site.components.layouts.DocsLayout
+title: Getting Started
+tag: GUIDE
 ---
 
 # Getting Started

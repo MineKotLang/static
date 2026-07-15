@@ -109,6 +109,105 @@
         function loadDirectory(path, pushState = true) {
             document.getElementById('current-dir').textContent = path;
             const content = document.getElementById('content');
+
+            if (path === 'api/contents' || path === 'api/contents.json') {
+                content.innerHTML = '<div class="loading">// Querying GitHub API recursively for documentation contents...</div>';
+
+                function parseFrontmatter(text) {
+                    const metadata = {};
+                    let body = text;
+                    if (text.startsWith("---")) {
+                        const end = text.indexOf("---", 3);
+                        if (end !== -1) {
+                            const fm = text.substring(3, end);
+                            body = text.substring(end + 3).trim();
+                            fm.split("\n").forEach(line => {
+                                const col = line.indexOf(":");
+                                if (col !== -1) {
+                                    const k = line.substring(0, col).trim();
+                                    let v = line.substring(col + 1).trim();
+                                    if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) {
+                                        v = v.substring(1, v.length - 1);
+                                    }
+                                    if (k) metadata[k] = v;
+                                }
+                            });
+                        }
+                    }
+                    return { body, metadata };
+                }
+
+                async function scanDir(dirPath, section) {
+                    const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${dirPath}`);
+                    if (!res.ok) throw new Error(`GitHub API returned ${res.status} for ${dirPath}`);
+                    const items = await res.json();
+                    const pages = [];
+                    for (const item of items) {
+                        if (item.name.startsWith('.') || item.name.endsWith('.json')) continue;
+                        if (item.type === 'dir') {
+                            const sub = await scanDir(item.path, section);
+                            pages.push(...sub);
+                        } else if (item.type === 'file' && item.name.endsWith('.md')) {
+                            const fRes = await fetch(item.download_url);
+                            let fm = {};
+                            if (fRes.ok) {
+                                const text = await fRes.text();
+                                fm = parseFrontmatter(text).metadata;
+                            }
+
+                            let relPath = item.path;
+                            if (relPath.startsWith("documentation/")) {
+                                relPath = relPath.substring("documentation/".length);
+                            }
+
+                            const segments = relPath.split("/");
+                            const innerPath = relPath.substring(section.length + 1);
+                            let pagePath = "";
+                            if (item.name.toLowerCase() === "index.md") {
+                                const dir = segments.slice(1, -1).join("/");
+                                pagePath = dir ? `/${dir}/` : "/";
+                            } else {
+                                pagePath = innerPath;
+                            }
+
+                            const pageInfo = {
+                                path: pagePath,
+                                section: section,
+                                ...fm
+                            };
+
+                            if (fm.weight !== undefined) pageInfo.weight = parseInt(fm.weight, 10);
+                            else if (fm.sidebar_position !== undefined) pageInfo.weight = parseInt(fm.sidebar_position, 10);
+
+                            pages.push(pageInfo);
+                        }
+                    }
+                    return pages;
+                }
+
+                Promise.all([
+                    scanDir("documentation/docs", "docs"),
+                    scanDir("documentation/modules", "modules"),
+                    scanDir("documentation/scripts", "scripts")
+                ]).then(([docs, modules, scripts]) => {
+                    const all = [...docs, ...modules, ...scripts];
+                    if (window.self !== window.top) {
+                        window.parent.postMessage({ type: 'MINEKOT_CONTENTS', data: all }, '*');
+                        content.innerHTML = '<div class="success">// Sent contents to parent window.</div>';
+                    } else {
+                        document.body.style.whiteSpace = 'pre';
+                        document.body.style.fontFamily = 'monospace';
+                        document.body.innerHTML = JSON.stringify(all, null, 2);
+                    }
+                }).catch(err => {
+                    content.innerHTML = `<div class="error">// API Error: ${err.message}</div>`;
+                    if (window.self !== window.top) {
+                        window.parent.postMessage({ type: 'MINEKOT_ERROR', error: err.message }, '*');
+                    }
+                });
+                return;
+            }
+
             content.innerHTML = '<div class="loading">// Loading directory contents...</div>';
 
             const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${path}`;

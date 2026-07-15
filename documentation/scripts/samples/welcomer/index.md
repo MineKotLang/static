@@ -1,3 +1,7 @@
+---
+title: Simple Welcomer
+tag: SCRIPT
+---
 # Welcome Message
 
 Sends a welcome message using MiniMessage format when a player joins the server.

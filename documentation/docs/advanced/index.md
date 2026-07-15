@@ -1,5 +1,7 @@
 ---
 root: org.minekot.site.components.layouts.DocsLayout
+title: Advanced
+tag: GUIDE
 ---
 
 # MineKot Advanced Documentation
